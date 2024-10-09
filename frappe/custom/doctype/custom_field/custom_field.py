@@ -23,6 +23,7 @@ class CustomField(Document):
 
 		allow_in_quick_entry: DF.Check
 		allow_on_submit: DF.Check
+		allow_others: DF.Check
 		bold: DF.Check
 		collapsible: DF.Check
 		collapsible_depends_on: DF.Code | None
@@ -34,51 +35,7 @@ class CustomField(Document):
 		fetch_from: DF.SmallText | None
 		fetch_if_empty: DF.Check
 		fieldname: DF.Data | None
-		fieldtype: DF.Literal[
-			"Autocomplete",
-			"Attach",
-			"Attach Image",
-			"Barcode",
-			"Button",
-			"Check",
-			"Code",
-			"Color",
-			"Column Break",
-			"Currency",
-			"Data",
-			"Date",
-			"Datetime",
-			"Duration",
-			"Dynamic Link",
-			"Float",
-			"Fold",
-			"Geolocation",
-			"Heading",
-			"HTML",
-			"HTML Editor",
-			"Icon",
-			"Image",
-			"Int",
-			"JSON",
-			"Link",
-			"Long Text",
-			"Markdown Editor",
-			"Password",
-			"Percent",
-			"Phone",
-			"Read Only",
-			"Rating",
-			"Section Break",
-			"Select",
-			"Signature",
-			"Small Text",
-			"Tab Break",
-			"Table",
-			"Table MultiSelect",
-			"Text",
-			"Text Editor",
-			"Time",
-		]
+		fieldtype: DF.Literal["Autocomplete", "Attach", "Attach Image", "Barcode", "Button", "Check", "Code", "Color", "Column Break", "Currency", "Data", "Date", "Datetime", "Duration", "Dynamic Link", "Float", "Fold", "Geolocation", "Heading", "HTML", "HTML Editor", "Icon", "Image", "Int", "JSON", "Link", "Long Text", "Markdown Editor", "Password", "Percent", "Phone", "Read Only", "Rating", "Radio", "Section Break", "Select", "Signature", "Small Text", "Tab Break", "Table", "Table MultiSelect", "Text", "Text Editor", "Time"]
 		hidden: DF.Check
 		hide_border: DF.Check
 		hide_days: DF.Check
@@ -116,7 +73,6 @@ class CustomField(Document):
 		translatable: DF.Check
 		unique: DF.Check
 		width: DF.Data | None
-
 	# end: auto-generated types
 	def autoname(self):
 		self.set_fieldname()
@@ -199,6 +155,8 @@ class CustomField(Document):
 			self.translatable = 0
 
 		check_fieldname_conflicts(self)
+		self.scrub_options_in_radio()
+		
 
 	def on_update(self):
 		# validate field
@@ -248,6 +206,17 @@ class CustomField(Document):
 
 		if self.fieldname == self.insert_after:
 			frappe.throw(_("Insert After cannot be set as {0}").format(meta.get_label(self.insert_after)))
+
+	def scrub_options_in_radio(self):
+		"""Strip options for whitespaces and empty lines cannot"""
+
+		if self.fieldtype == "Radio" and self.options is not None:
+			options_list = []
+			for i, option in enumerate(self.options.split("\n")):
+				_option = option.strip()
+				if (i == 0 or _option)  and len(_option) > 0:
+					options_list.append(_option)
+			self.options = "\n".join(options_list)
 
 
 @frappe.whitelist()
