@@ -14,39 +14,13 @@ class WebFormField(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		allow_others: DF.Check
 		allow_read_on_all_link_options: DF.Check
 		default: DF.Data | None
 		depends_on: DF.Code | None
 		description: DF.Text | None
 		fieldname: DF.Literal[None]
-		fieldtype: DF.Literal[
-			"Attach",
-			"Attach Image",
-			"Check",
-			"Currency",
-			"Color",
-			"Data",
-			"Date",
-			"Datetime",
-			"Duration",
-			"Float",
-			"HTML",
-			"Int",
-			"Link",
-			"Password",
-			"Phone",
-			"Rating",
-			"Select",
-			"Signature",
-			"Small Text",
-			"Text",
-			"Text Editor",
-			"Table",
-			"Time",
-			"Section Break",
-			"Column Break",
-			"Page Break",
-		]
+		fieldtype: DF.Literal["Attach", "Attach Image", "Check", "Currency", "Color", "Data", "Date", "Datetime", "Duration", "Float", "HTML", "Int", "Link", "Password", "Phone", "Rating", "Radio", "Select", "Signature", "Small Text", "Text", "Text Editor", "Table", "Time", "Section Break", "Column Break", "Page Break"]
 		hidden: DF.Check
 		label: DF.Data | None
 		mandatory_depends_on: DF.Code | None
